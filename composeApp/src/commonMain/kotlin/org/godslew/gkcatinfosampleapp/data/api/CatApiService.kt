@@ -50,6 +50,7 @@ class CatApiServiceImpl(
             parameter("limit", limit)
             parameter("page", page)
             parameter("order", order)
+            parameter("has_breeds", 1)
         }.body()
     }
     

@@ -47,6 +47,10 @@ class CatRepository(
     suspend fun getRandomCatImage(): CatImage {
         return catApiService.getRandomImage()
     }
+    
+    suspend fun getBreedById(breedId: String): CatBreed {
+        return catApiService.getBreedById(breedId)
+    }
 }
 
 data class CatInfo(
