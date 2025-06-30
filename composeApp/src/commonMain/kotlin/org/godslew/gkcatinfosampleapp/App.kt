@@ -23,9 +23,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.setSingletonImageLoaderFactory
+import kotlinx.serialization.Serializable
+import org.godslew.gkcatinfosampleapp.data.model.CatBreed
 import org.godslew.gkcatinfosampleapp.data.model.CatImage
 import org.godslew.gkcatinfosampleapp.presentation.CatDetailScreenWithTransition
 import org.godslew.gkcatinfosampleapp.presentation.CatViewModel
@@ -33,6 +36,16 @@ import org.godslew.gkcatinfosampleapp.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+
+@Serializable
+data object Gallery
+
+@Serializable
+data class Detail(
+    val imageId: String,
+    val imageUrl: String,
+    val breedId: String = ""
+)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -45,34 +58,51 @@ fun App() {
 
     AppTheme {
         val navController = rememberNavController()
-        var selectedCatImage by remember { mutableStateOf<CatImage?>(null) }
+        var cachedImages by remember { mutableStateOf<Map<String, CatImage>>(emptyMap()) }
 
         SharedTransitionLayout {
             NavHost(
                 navController = navController,
-                startDestination = "gallery"
+                startDestination = Gallery
             ) {
-                composable("gallery") {
+                composable<Gallery> {
                     CatGalleryScreen(
                         navController = navController,
                         sharedTransitionScope = this@SharedTransitionLayout,
                         animatedContentScope = this@composable,
                         onCatImageSelected = { catImage ->
-                            selectedCatImage = catImage
-                            navController.navigate("detail")
+                            cachedImages = cachedImages + (catImage.id to catImage)
+                            val breedId = catImage.breeds?.firstOrNull()?.id ?: ""
+                            navController.navigate(
+                                Detail(
+                                    imageId = catImage.id,
+                                    imageUrl = catImage.url,
+                                    breedId = breedId
+                                )
+                            )
                         }
                     )
                 }
 
-                composable("detail") {
-                    selectedCatImage?.let { catImage ->
-                        CatDetailScreenWithTransition(
-                            catImage = catImage,
-                            onBackClick = { navController.popBackStack() },
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                            animatedContentScope = this@composable
-                        )
-                    }
+                composable<Detail> { backStackEntry ->
+                    val detail = backStackEntry.toRoute<Detail>()
+                    val catImage = cachedImages[detail.imageId] ?: CatImage(
+                        id = detail.imageId,
+                        url = detail.imageUrl,
+                        breeds = if (detail.breedId.isNotEmpty()) {
+                            listOf(CatBreed(
+                                id = detail.breedId,
+                                name = ""
+                            ))
+                        } else null
+                    )
+                    
+                    CatDetailScreenWithTransition(
+                        catImage = catImage,
+                        onBackClick = { navController.popBackStack() },
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedContentScope = this@composable
+                    )
                 }
             }
         }
