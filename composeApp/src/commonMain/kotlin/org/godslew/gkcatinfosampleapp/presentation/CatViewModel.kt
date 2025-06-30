@@ -27,7 +27,8 @@ class CatViewModel(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                val images = catRepository.searchImages(limit = 4)
+                // 各リクエストで異なる画像を取得するため、limitを多めに設定してランダムに取得
+                val images = catRepository.searchImages(limit = 10, hasBreeds = true).shuffled().take(4)
                 _uiState.value = _uiState.value.copy(
                     catImages = images,
                     isLoading = false,

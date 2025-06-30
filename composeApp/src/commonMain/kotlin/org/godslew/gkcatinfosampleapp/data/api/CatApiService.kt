@@ -13,7 +13,8 @@ interface CatApiService {
         breedIds: String? = null,
         limit: Int = 10,
         page: Int = 0,
-        order: String = "DESC"
+        order: String = "DESC",
+        hasBreeds: Boolean = false
     ): List<CatImage>
     suspend fun getRandomImage(): CatImage
 }
@@ -41,7 +42,8 @@ class CatApiServiceImpl(
         breedIds: String?,
         limit: Int,
         page: Int,
-        order: String
+        order: String,
+        hasBreeds: Boolean
     ): List<CatImage> {
         return apiClient.request<List<CatImage>>(
             path = "/images/search"
@@ -50,7 +52,9 @@ class CatApiServiceImpl(
             parameter("limit", limit)
             parameter("page", page)
             parameter("order", order)
-            parameter("has_breeds", 1)
+            if (hasBreeds) {
+                parameter("has_breeds", 1)
+            }
         }.body()
     }
     

@@ -40,8 +40,8 @@ class CatRepository(
         return catApiService.getBreeds(limit, page)
     }
     
-    suspend fun searchImages(breedId: String? = null, limit: Int = 10): List<CatImage> {
-        return catApiService.searchImages(breedIds = breedId, limit = limit)
+    suspend fun searchImages(breedId: String? = null, limit: Int = 10, hasBreeds: Boolean = true): List<CatImage> {
+        return catApiService.searchImages(breedIds = breedId, limit = limit, order = "RANDOM", hasBreeds = hasBreeds)
     }
     
     suspend fun getRandomCatImage(): CatImage {
