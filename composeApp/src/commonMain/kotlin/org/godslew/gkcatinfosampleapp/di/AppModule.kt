@@ -12,7 +12,7 @@ import org.koin.dsl.module
 val appModule = module {
     single<Platform> { getPlatform() }
     singleOf(::Greeting)
-    singleOf(::CatRepository)
+    single { CatRepository(get()) }
     factoryOf(::GetCatInfoUseCase)
     factoryOf(::CatViewModel)
 }
