@@ -3,31 +3,26 @@ package org.godslew.gkcatinfosampleapp.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import org.godslew.gkcatinfosampleapp.data.CatRepository
-import org.godslew.gkcatinfosampleapp.data.model.CatImage
+import org.godslew.gkcatinfosampleapp.data.model.CatBreed
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CatViewModel(
+class CatDetailViewModel(
     private val catRepository: CatRepository
 ) : ViewModel() {
     
-    private val _uiState = MutableStateFlow(CatUiState())
-    val uiState: StateFlow<CatUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(CatDetailUiState())
+    val uiState: StateFlow<CatDetailUiState> = _uiState.asStateFlow()
     
-    init {
-        loadCatImages()
-    }
-    
-    private fun loadCatImages() {
+    fun loadBreedDetails(breedId: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                // 各リクエストで異なる画像を取得するため、limitを多めに設定してランダムに取得
-                val images = catRepository.searchImages(limit = 10, hasBreeds = true)
+                val breed = catRepository.getBreedById(breedId)
                 _uiState.value = _uiState.value.copy(
-                    catImages = images,
+                    breedDetails = breed,
                     isLoading = false,
                     error = null
                 )
@@ -39,14 +34,10 @@ class CatViewModel(
             }
         }
     }
-    
-    fun refresh() {
-        loadCatImages()
-    }
 }
 
-data class CatUiState(
-    val catImages: List<CatImage> = emptyList(),
+data class CatDetailUiState(
+    val breedDetails: CatBreed? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )
