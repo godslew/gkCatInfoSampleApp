@@ -35,11 +35,6 @@ import org.godslew.gkcatinfosampleapp.presentation.CatDetailScreenWithTransition
 import org.godslew.gkcatinfosampleapp.theme.AppTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.compose.koinInject
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import org.godslew.gkcatinfosampleapp.navigation.encodeUrl
-import org.godslew.gkcatinfosampleapp.navigation.decodeUrl
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -52,6 +47,7 @@ fun App() {
     
     AppTheme {
         val navController = rememberNavController()
+        var selectedCatImage by remember { mutableStateOf<CatImage?>(null) }
         
         SharedTransitionLayout {
             NavHost(
@@ -62,21 +58,22 @@ fun App() {
                     CatGalleryScreen(
                         navController = navController,
                         sharedTransitionScope = this@SharedTransitionLayout,
-                        animatedContentScope = this@composable
+                        animatedContentScope = this@composable,
+                        onCatImageSelected = { catImage ->
+                            selectedCatImage = catImage
+                        }
                     )
                 }
                 
-                composable("detail/{catImageJson}") { backStackEntry ->
-                    val catImageJson = backStackEntry.arguments?.getString("catImageJson") ?: ""
-                    val decodedJson = decodeUrl(catImageJson)
-                    val catImage = Json.decodeFromString<CatImage>(decodedJson)
-                    
-                    CatDetailScreenWithTransition(
-                        catImage = catImage,
-                        onBackClick = { navController.popBackStack() },
-                        sharedTransitionScope = this@SharedTransitionLayout,
-                        animatedContentScope = this@composable
-                    )
+                composable("detail") { 
+                    selectedCatImage?.let { catImage ->
+                        CatDetailScreenWithTransition(
+                            catImage = catImage,
+                            onBackClick = { navController.popBackStack() },
+                            sharedTransitionScope = this@SharedTransitionLayout,
+                            animatedContentScope = this@composable
+                        )
+                    }
                 }
             }
         }
@@ -88,7 +85,8 @@ fun App() {
 fun CatGalleryScreen(
     navController: NavHostController,
     sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope
+    animatedContentScope: AnimatedContentScope,
+    onCatImageSelected: (CatImage) -> Unit
 ) {
     val viewModel = koinViewModel<CatViewModel>()
     val uiState by viewModel.uiState.collectAsState()
@@ -178,9 +176,8 @@ fun CatGalleryScreen(
                                 modifier = Modifier
                                     .aspectRatio(1f)
                                     .clickable { 
-                                        val catImageJson = Json.encodeToString(catImage)
-                                        val encodedJson = encodeUrl(catImageJson)
-                                        navController.navigate("detail/$encodedJson")
+                                        onCatImageSelected(catImage)
+                                        navController.navigate("detail")
                                     },
                                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                             ) {
