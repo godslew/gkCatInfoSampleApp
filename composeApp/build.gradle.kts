@@ -1,12 +1,22 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.buildKonfig)
+}
+
+val credentialPropertiesFile = rootProject.file("credential.properties")
+val credentialProperties = Properties()
+if (credentialPropertiesFile.exists()) {
+    credentialProperties.load(credentialPropertiesFile.inputStream())
 }
 
 kotlin {
@@ -34,6 +44,10 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
+            implementation(libs.ktor.client.android)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -47,6 +61,11 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.kotlinx.serialization.json)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -64,6 +83,11 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        
+        buildConfigField("String", "CAT_API_KEY", "\"${credentialProperties["CAT_API_KEY"] ?: ""}\"")
+    }
+    buildFeatures {
+        buildConfig = true
     }
     packaging {
         resources {
@@ -73,6 +97,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
@@ -83,5 +108,15 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+
+buildkonfig {
+    packageName = "org.godslew.gkcatinfosampleapp"
+    objectName = "BuildKonfig"
+    exposeObjectWithName = "BuildKonfig"
+    
+    defaultConfigs {
+        buildConfigField(STRING, "CAT_API_KEY", credentialProperties["CAT_API_KEY"]?.toString() ?: "")
+    }
 }
 
