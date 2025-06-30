@@ -2,17 +2,14 @@ package org.godslew.gkcatinfosampleapp.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import org.godslew.gkcatinfosampleapp.data.CatInfo
 import org.godslew.gkcatinfosampleapp.data.CatRepository
 import org.godslew.gkcatinfosampleapp.data.model.CatImage
-import org.godslew.gkcatinfosampleapp.domain.GetCatInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CatViewModel(
-    private val getCatInfoUseCase: GetCatInfoUseCase,
     private val catRepository: CatRepository
 ) : ViewModel() {
     
@@ -49,7 +46,6 @@ class CatViewModel(
 }
 
 data class CatUiState(
-    val catInfo: CatInfo? = null,
     val catImages: List<CatImage> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null

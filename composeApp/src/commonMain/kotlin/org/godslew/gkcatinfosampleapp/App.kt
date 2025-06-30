@@ -27,25 +27,16 @@ import androidx.navigation.toRoute
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.setSingletonImageLoaderFactory
-import kotlinx.serialization.Serializable
 import org.godslew.gkcatinfosampleapp.data.model.CatBreed
 import org.godslew.gkcatinfosampleapp.data.model.CatImage
+import org.godslew.gkcatinfosampleapp.navigation.Detail
+import org.godslew.gkcatinfosampleapp.navigation.Gallery
 import org.godslew.gkcatinfosampleapp.presentation.CatDetailScreenWithTransition
 import org.godslew.gkcatinfosampleapp.presentation.CatViewModel
 import org.godslew.gkcatinfosampleapp.theme.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-
-@Serializable
-data object Gallery
-
-@Serializable
-data class Detail(
-    val imageId: String,
-    val imageUrl: String,
-    val breedId: String = ""
-)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
