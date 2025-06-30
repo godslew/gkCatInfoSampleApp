@@ -3,6 +3,8 @@ package org.godslew.gkcatinfosampleapp.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import org.godslew.gkcatinfosampleapp.data.CatInfo
+import org.godslew.gkcatinfosampleapp.data.CatRepository
+import org.godslew.gkcatinfosampleapp.data.model.CatImage
 import org.godslew.gkcatinfosampleapp.domain.GetCatInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,30 +12,44 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CatViewModel(
-    private val getCatInfoUseCase: GetCatInfoUseCase
+    private val getCatInfoUseCase: GetCatInfoUseCase,
+    private val catRepository: CatRepository
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(CatUiState())
     val uiState: StateFlow<CatUiState> = _uiState.asStateFlow()
     
     init {
-        loadCatInfo()
+        loadCatImages()
     }
     
-    private fun loadCatInfo() {
+    private fun loadCatImages() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            getCatInfoUseCase().collect { catInfo ->
-                _uiState.value = CatUiState(
-                    catInfo = catInfo,
-                    isLoading = false
+            try {
+                val images = catRepository.searchImages(limit = 4)
+                _uiState.value = _uiState.value.copy(
+                    catImages = images,
+                    isLoading = false,
+                    error = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message
                 )
             }
         }
+    }
+    
+    fun refresh() {
+        loadCatImages()
     }
 }
 
 data class CatUiState(
     val catInfo: CatInfo? = null,
-    val isLoading: Boolean = false
+    val catImages: List<CatImage> = emptyList(),
+    val isLoading: Boolean = false,
+    val error: String? = null
 )

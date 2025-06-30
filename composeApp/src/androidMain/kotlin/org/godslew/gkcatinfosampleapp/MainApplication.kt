@@ -2,6 +2,7 @@ package org.godslew.gkcatinfosampleapp
 
 import android.app.Application
 import org.godslew.gkcatinfosampleapp.di.appModule
+import org.godslew.gkcatinfosampleapp.di.androidImageLoaderModule
 import org.godslew.gkcatinfosampleapp.di.networkModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -14,7 +15,7 @@ class MainApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@MainApplication)
-            modules(appModule, networkModule)
+            modules(appModule, networkModule, androidImageLoaderModule)
         }
     }
 }

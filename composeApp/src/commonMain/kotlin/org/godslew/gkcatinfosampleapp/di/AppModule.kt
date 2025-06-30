@@ -14,7 +14,7 @@ val appModule = module {
     singleOf(::Greeting)
     single { CatRepository(get()) }
     factoryOf(::GetCatInfoUseCase)
-    factoryOf(::CatViewModel)
+    factory { CatViewModel(get(), get()) }
 }
 
 expect fun getPlatform(): Platform
