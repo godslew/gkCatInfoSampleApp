@@ -1,6 +1,5 @@
 package org.godslew.gkcatinfosampleapp
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -8,13 +7,12 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,13 +26,13 @@ import androidx.navigation.compose.rememberNavController
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.setSingletonImageLoaderFactory
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.godslew.gkcatinfosampleapp.data.model.CatImage
-import org.godslew.gkcatinfosampleapp.presentation.CatViewModel
 import org.godslew.gkcatinfosampleapp.presentation.CatDetailScreenWithTransition
+import org.godslew.gkcatinfosampleapp.presentation.CatViewModel
 import org.godslew.gkcatinfosampleapp.theme.AppTheme
-import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -44,11 +42,11 @@ fun App() {
     setSingletonImageLoaderFactory { context ->
         imageLoader
     }
-    
+
     AppTheme {
         val navController = rememberNavController()
         var selectedCatImage by remember { mutableStateOf<CatImage?>(null) }
-        
+
         SharedTransitionLayout {
             NavHost(
                 navController = navController,
@@ -61,11 +59,12 @@ fun App() {
                         animatedContentScope = this@composable,
                         onCatImageSelected = { catImage ->
                             selectedCatImage = catImage
+                            navController.navigate("detail")
                         }
                     )
                 }
-                
-                composable("detail") { 
+
+                composable("detail") {
                     selectedCatImage?.let { catImage ->
                         CatDetailScreenWithTransition(
                             catImage = catImage,
@@ -90,7 +89,7 @@ fun CatGalleryScreen(
 ) {
     val viewModel = koinViewModel<CatViewModel>()
     val uiState by viewModel.uiState.collectAsState()
-    
+
     val infiniteTransition = rememberInfiniteTransition(label = "refresh")
     val rotation by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -101,7 +100,7 @@ fun CatGalleryScreen(
         ),
         label = "rotation"
     )
-    
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -143,6 +142,7 @@ fun CatGalleryScreen(
                         }
                     }
                 }
+
                 uiState.error != null -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -164,6 +164,7 @@ fun CatGalleryScreen(
                         }
                     }
                 }
+
                 else -> {
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
@@ -175,9 +176,8 @@ fun CatGalleryScreen(
                             Card(
                                 modifier = Modifier
                                     .aspectRatio(1f)
-                                    .clickable { 
+                                    .clickable {
                                         onCatImageSelected(catImage)
-                                        navController.navigate("detail")
                                     },
                                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                             ) {
