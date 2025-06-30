@@ -25,6 +25,7 @@ Kotlin Multiplatform (KMP) と Compose Multiplatform を使用した猫の情報
 - **アーキテクチャ**: MVVM パターン
 - **ネットワーク**: Ktor Client
 - **画像読み込み**: Coil
+- **API**: [The Cat API](https://thecatapi.com/) - 猫の画像と品種情報を提供
 
 ## 📂 プロジェクト構造
 
