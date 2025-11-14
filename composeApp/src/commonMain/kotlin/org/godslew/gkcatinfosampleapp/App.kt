@@ -30,6 +30,8 @@ import coil3.compose.setSingletonImageLoaderFactory
 import org.godslew.gkcatinfosampleapp.data.model.CatBreed
 import org.godslew.gkcatinfosampleapp.data.model.CatImage
 import org.godslew.gkcatinfosampleapp.navigation.Detail
+import org.godslew.gkcatinfosampleapp.value.CatBreedId
+import org.godslew.gkcatinfosampleapp.value.CatImageId
 import org.godslew.gkcatinfosampleapp.navigation.Gallery
 import org.godslew.gkcatinfosampleapp.presentation.CatDetailScreenWithTransition
 import org.godslew.gkcatinfosampleapp.presentation.CatViewModel
@@ -49,7 +51,7 @@ fun App() {
 
     AppTheme {
         val navController = rememberNavController()
-        var cachedImages by remember { mutableStateOf<Map<String, CatImage>>(emptyMap()) }
+        var cachedImages by remember { mutableStateOf<Map<CatImageId, CatImage>>(emptyMap()) }
 
         SharedTransitionLayout {
             NavHost(
@@ -63,10 +65,10 @@ fun App() {
                         animatedContentScope = this@composable,
                         onCatImageSelected = { catImage ->
                             cachedImages = cachedImages + (catImage.id to catImage)
-                            val breedId = catImage.breeds?.firstOrNull()?.id ?: ""
+                            val breedId = catImage.breeds?.firstOrNull()?.id?.value ?: ""
                             navController.navigate(
                                 Detail(
-                                    imageId = catImage.id,
+                                    imageId = catImage.id.value,
                                     imageUrl = catImage.url,
                                     breedId = breedId
                                 )
@@ -77,12 +79,12 @@ fun App() {
 
                 composable<Detail> { backStackEntry ->
                     val detail = backStackEntry.toRoute<Detail>()
-                    val catImage = cachedImages[detail.imageId] ?: CatImage(
-                        id = detail.imageId,
+                    val catImage = cachedImages[CatImageId(detail.imageId)] ?: CatImage(
+                        id = CatImageId(detail.imageId),
                         url = detail.imageUrl,
                         breeds = if (detail.breedId.isNotEmpty()) {
                             listOf(CatBreed(
-                                id = detail.breedId,
+                                id = CatBreedId(detail.breedId),
                                 name = ""
                             ))
                         } else null
@@ -210,7 +212,7 @@ fun CatGalleryScreen(
                                         modifier = Modifier
                                             .fillMaxSize()
                                             .sharedElement(
-                                                rememberSharedContentState(key = "cat_image_${catImage.id}"),
+                                                rememberSharedContentState(key = "cat_image_${catImage.id.value}"),
                                                 animatedVisibilityScope = animatedContentScope
                                             )
                                     )

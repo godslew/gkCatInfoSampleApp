@@ -1,10 +1,9 @@
 package org.godslew.gkcatinfosampleapp.data.model
 
-import kotlinx.serialization.Serializable
+import org.godslew.gkcatinfosampleapp.value.CatImageId
 
-@Serializable
 data class CatImage(
-    val id: String,
+    val id: CatImageId,
     val url: String,
     val width: Int? = null,
     val height: Int? = null,

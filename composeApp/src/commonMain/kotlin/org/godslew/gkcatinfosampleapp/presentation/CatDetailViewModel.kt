@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import org.godslew.gkcatinfosampleapp.data.CatRepository
 import org.godslew.gkcatinfosampleapp.data.model.CatBreed
+import org.godslew.gkcatinfosampleapp.value.CatBreedId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,11 +13,11 @@ import kotlinx.coroutines.launch
 class CatDetailViewModel(
     private val catRepository: CatRepository
 ) : ViewModel() {
-    
+
     private val _uiState = MutableStateFlow(CatDetailUiState())
     val uiState: StateFlow<CatDetailUiState> = _uiState.asStateFlow()
-    
-    fun loadBreedDetails(breedId: String) {
+
+    fun loadBreedDetails(breedId: CatBreedId) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {

@@ -16,7 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import org.godslew.gkcatinfosampleapp.data.model.CatImage
-import org.godslew.gkcatinfosampleapp.data.model.CatBreed
+import org.godslew.gkcatinfosampleapp.value.CatBreedId
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -66,7 +66,7 @@ fun CatDetailScreenWithTransition(
                         .fillMaxWidth()
                         .aspectRatio(1f)
                         .sharedElement(
-                            rememberSharedContentState(key = "cat_image_${catImage.id}"),
+                            rememberSharedContentState(key = "cat_image_${catImage.id.value}"),
                             animatedVisibilityScope = animatedContentScope
                         )
                 )
