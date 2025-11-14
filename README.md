@@ -9,6 +9,14 @@ Kotlin Multiplatform (KMP) と Compose Multiplatform を使用した猫の情報
   <img src="docs/Detail.png" alt="詳細画面" width="300"/>
 </p>
 
+## 🎥 デモ動画
+
+<p align="center">
+  <video src="docs/record_screen.mov" width="300" controls>
+    アプリのデモ動画
+  </video>
+</p>
+
 ## 🚀 機能
 
 - 様々な猫の品種を写真ギャラリーで表示
