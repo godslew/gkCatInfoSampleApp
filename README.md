@@ -11,11 +11,7 @@ Kotlin Multiplatform (KMP) と Compose Multiplatform を使用した猫の情報
 
 ## 🎥 デモ動画
 
-<p align="center">
-  <video src="docs/record_screen.mov" width="300" controls>
-    アプリのデモ動画
-  </video>
-</p>
+https://github.com/user-attachments/assets/301c14c9-dca5-4acf-b852-290a43c68d17
 
 ## 🚀 機能
 
