@@ -3,20 +3,40 @@ package org.godslew.gkcatinfosampleapp.presentation
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import org.godslew.gkcatinfosampleapp.data.model.CatImage
-import org.godslew.gkcatinfosampleapp.value.CatBreedId
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -29,7 +49,7 @@ fun CatDetailScreenWithTransition(
 ) {
     val viewModel = koinViewModel<CatDetailViewModel>()
     val uiState by viewModel.uiState.collectAsState()
-    
+
     LaunchedEffect(catImage) {
         catImage.breeds?.firstOrNull()?.let { breed ->
             viewModel.loadBreedDetails(breed.id)
@@ -67,11 +87,11 @@ fun CatDetailScreenWithTransition(
                         .aspectRatio(1f)
                         .sharedElement(
                             rememberSharedContentState(key = "cat_image_${catImage.id.value}"),
-                            animatedVisibilityScope = animatedContentScope
+                            animatedVisibilityScope = animatedContentScope,
                         )
                 )
             }
-            
+
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier
@@ -91,7 +111,7 @@ fun CatDetailScreenWithTransition(
                             text = breed.name,
                             style = MaterialTheme.typography.headlineMedium
                         )
-                        
+
                         breed.altNames?.let { altNames ->
                             if (altNames.isNotEmpty()) {
                                 Text(
@@ -101,9 +121,9 @@ fun CatDetailScreenWithTransition(
                                 )
                             }
                         }
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(
@@ -118,7 +138,7 @@ fun CatDetailScreenWithTransition(
                                     text = "Overview",
                                     style = MaterialTheme.typography.titleMedium
                                 )
-                                
+
                                 breed.description?.let {
                                     Text(
                                         text = it,
@@ -127,7 +147,7 @@ fun CatDetailScreenWithTransition(
                                 }
                             }
                         }
-                        
+
                         Card(
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -139,25 +159,25 @@ fun CatDetailScreenWithTransition(
                                     text = "Characteristics",
                                     style = MaterialTheme.typography.titleMedium
                                 )
-                                
+
                                 breed.temperament?.let {
                                     DetailRow("Temperament", it)
                                 }
-                                
+
                                 breed.origin?.let {
                                     DetailRow("Origin", it)
                                 }
-                                
+
                                 breed.lifeSpan?.let {
                                     DetailRow("Life Span", "$it years")
                                 }
-                                
+
                                 breed.weight?.let { weight ->
                                     DetailRow("Weight", "${weight.metric} kg")
                                 }
                             }
                         }
-                        
+
                         Card(
                             modifier = Modifier.fillMaxWidth()
                         ) {
@@ -169,23 +189,23 @@ fun CatDetailScreenWithTransition(
                                     text = "Ratings",
                                     style = MaterialTheme.typography.titleMedium
                                 )
-                                
+
                                 breed.affectionLevel?.let {
                                     RatingRow("Affection Level", it)
                                 }
-                                
+
                                 breed.energyLevel?.let {
                                     RatingRow("Energy Level", it)
                                 }
-                                
+
                                 breed.intelligence?.let {
                                     RatingRow("Intelligence", it)
                                 }
-                                
+
                                 breed.socialNeeds?.let {
                                     RatingRow("Social Needs", it)
                                 }
-                                
+
                                 breed.strangerFriendly?.let {
                                     RatingRow("Stranger Friendly", it)
                                 }
